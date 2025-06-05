@@ -1,37 +1,44 @@
-0,0,0,0.1);
+import streamlit as st
+import pandas as pd
+from datetime import datetime, time, timedelta
+
+# Red Ranch Dogs styling
+st.markdown("""
+    <style>
+        html, body, .stApp {
+            background-color: #fffaf7;
+            color: #332821;
+            font-family: "Segoe UI", sans-serif;
         }
-        .stButton > button {
+        .stButton>button {
             background-color: #a6342d !important;
             color: white !important;
             border-radius: 5px;
-            border: none;
             padding: 10px 20px;
         }
-        .stButton > button:hover {
-            background-color: #802720 !important;
-        }
-        .stSelectbox div, .stDateInput, .stTimeInput, .stMultiselect {
-            background-color: #fef3ec !important;
-            border: 1px solid #a6342d !important;
-            border-radius: 5px;
-        }
-        .stDownloadButton > button {
+        .stDownloadButton>button {
             background-color: #a6342d !important;
             color: white !important;
             border-radius: 5px;
         }
-        .stDownloadButton > button:hover {
-            background-color: #802720 !important;
+        div[data-baseweb="select"] > div {
+            background-color: #fef3ec !important;
+            border: 1px solid #a6342d !important;
+            border-radius: 5px !important;
+        }
+        input {
+            background-color: #fef3ec !important;
+            border: 1px solid #a6342d !important;
+            border-radius: 5px !important;
+            padding: 8px !important;
         }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("Barn Team Hours Tracker")
 
-# Barn team names
 barn_team_names = ["Sky", "Giselle", "Hannah", "Gabe", "Izzy", "Mia"]
 
-# Generate 30-minute time options from 8:30 AM to 10:00 PM
 def generate_time_slots(start, end, interval_minutes):
     times = []
     current = datetime.combine(datetime.today(), start)
@@ -43,14 +50,12 @@ def generate_time_slots(start, end, interval_minutes):
 
 time_options = generate_time_slots(time(8, 30), time(22, 0), 30)
 
-# Inputs
 employee = st.selectbox("Barn Team Member", barn_team_names)
 date = st.date_input("Date")
 hourly_rate = st.selectbox("Hourly Rate", [15, 17])
 start_time = st.selectbox("Start Time", time_options, format_func=lambda t: t.strftime("%I:%M %p"))
 end_time = st.selectbox("End Time", time_options, format_func=lambda t: t.strftime("%I:%M %p"))
 
-# Validate and Add Entry
 if datetime.combine(date, end_time) <= datetime.combine(date, start_time):
     st.warning("End time must be after start time.")
 else:
@@ -74,7 +79,6 @@ else:
         st.session_state.log.append(new_entry)
         st.success("Entry added!")
 
-# Show log and delete entries
 if "log" in st.session_state and st.session_state.log:
     df = pd.DataFrame(st.session_state.log)
 
