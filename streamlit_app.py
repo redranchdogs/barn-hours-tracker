@@ -1,22 +1,4 @@
-import streamlit as st
-import pandas as pd
-from datetime import datetime, time, timedelta
-
-# 🖌️ Style for Red Ranch Dogs brand
-st.markdown("""
-    <style>
-        body {
-            font-family: "Segoe UI", sans-serif;
-            background-color: #fffaf7;
-            color: #332821;
-        }
-        .stApp {
-            max-width: 800px;
-            margin: auto;
-            border-radius: 10px;
-            background-color: #ffffff;
-            padding: 2rem;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+0,0,0,0.1);
         }
         .stButton > button {
             background-color: #a6342d !important;
