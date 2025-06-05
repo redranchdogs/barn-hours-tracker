@@ -2,43 +2,12 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, time, timedelta
 
-# Red Ranch Dogs styling
-st.markdown("""
-    <style>
-        html, body, .stApp {
-            background-color: #fffaf7;
-            color: #332821;
-            font-family: "Segoe UI", sans-serif;
-        }
-        .stButton>button {
-            background-color: #a6342d !important;
-            color: white !important;
-            border-radius: 5px;
-            padding: 10px 20px;
-        }
-        .stDownloadButton>button {
-            background-color: #a6342d !important;
-            color: white !important;
-            border-radius: 5px;
-        }
-        div[data-baseweb="select"] > div {
-            background-color: #fef3ec !important;
-            border: 1px solid #a6342d !important;
-            border-radius: 5px !important;
-        }
-        input {
-            background-color: #fef3ec !important;
-            border: 1px solid #a6342d !important;
-            border-radius: 5px !important;
-            padding: 8px !important;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
 st.title("Barn Team Hours Tracker")
 
+# Dropdown list of barn team members
 barn_team_names = ["Sky", "Giselle", "Hannah", "Gabe", "Izzy", "Mia"]
 
+# Generate 30-minute time slots from 8:30 AM to 10:00 PM
 def generate_time_slots(start, end, interval_minutes):
     times = []
     current = datetime.combine(datetime.today(), start)
@@ -50,12 +19,14 @@ def generate_time_slots(start, end, interval_minutes):
 
 time_options = generate_time_slots(time(8, 30), time(22, 0), 30)
 
+# Input form
 employee = st.selectbox("Barn Team Member", barn_team_names)
 date = st.date_input("Date")
 hourly_rate = st.selectbox("Hourly Rate", [15, 17])
 start_time = st.selectbox("Start Time", time_options, format_func=lambda t: t.strftime("%I:%M %p"))
 end_time = st.selectbox("End Time", time_options, format_func=lambda t: t.strftime("%I:%M %p"))
 
+# Validate and calculate
 if datetime.combine(date, end_time) <= datetime.combine(date, start_time):
     st.warning("End time must be after start time.")
 else:
@@ -79,6 +50,7 @@ else:
         st.session_state.log.append(new_entry)
         st.success("Entry added!")
 
+# Display and delete log
 if "log" in st.session_state and st.session_state.log:
     df = pd.DataFrame(st.session_state.log)
 
@@ -93,5 +65,6 @@ if "log" in st.session_state and st.session_state.log:
         st.success("Selected entries deleted.")
         st.experimental_rerun()
 
+    # Download button
     csv = df.to_csv(index=False).encode('utf-8')
     st.download_button("Download CSV", csv, "barn_team_hours.csv", "text/csv")
