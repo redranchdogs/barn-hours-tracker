@@ -4,10 +4,10 @@ from datetime import datetime, time, timedelta
 
 st.title("Barn Team Hours Tracker")
 
-# Dropdown list of barn team members
+# Barn team dropdown list
 barn_team_names = ["Sky", "Giselle", "Hannah", "Gabe", "Izzy", "Mia"]
 
-# Generate 30-minute time slots from 8:30 AM to 10:00 PM
+# Generate 30-minute time slots
 def generate_time_slots(start, end, interval_minutes):
     times = []
     current = datetime.combine(datetime.today(), start)
@@ -19,14 +19,14 @@ def generate_time_slots(start, end, interval_minutes):
 
 time_options = generate_time_slots(time(8, 30), time(22, 0), 30)
 
-# Input form
+# Inputs
 employee = st.selectbox("Barn Team Member", barn_team_names)
 date = st.date_input("Date")
-hourly_rate = st.selectbox("Hourly Rate", [15, 17])
 start_time = st.selectbox("Start Time", time_options, format_func=lambda t: t.strftime("%I:%M %p"))
 end_time = st.selectbox("End Time", time_options, format_func=lambda t: t.strftime("%I:%M %p"))
+hourly_rate = st.selectbox("Hourly Rate", [15, 17])  # Moved below end time
 
-# Validate and calculate
+# Validate and add entry
 if datetime.combine(date, end_time) <= datetime.combine(date, start_time):
     st.warning("End time must be after start time.")
 else:
@@ -36,7 +36,7 @@ else:
 
         new_entry = {
             "Barn Team Member": employee,
-            "Date": date.strftime("%m/%d/%y"),
+            "Date": date.strftime("%m/%d/%Y"),  # MM/DD/YYYY format
             "Start": start_time.strftime("%I:%M %p"),
             "End": end_time.strftime("%I:%M %p"),
             "Hours Worked": round(hours_worked, 2),
@@ -50,7 +50,7 @@ else:
         st.session_state.log.append(new_entry)
         st.success("Entry added!")
 
-# Display and delete log
+# Display and delete entries
 if "log" in st.session_state and st.session_state.log:
     df = pd.DataFrame(st.session_state.log)
 
@@ -65,6 +65,6 @@ if "log" in st.session_state and st.session_state.log:
         st.success("Selected entries deleted.")
         st.experimental_rerun()
 
-    # Download button
+    # Download CSV
     csv = df.to_csv(index=False).encode('utf-8')
     st.download_button("Download CSV", csv, "barn_team_hours.csv", "text/csv")
